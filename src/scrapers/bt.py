@@ -6,12 +6,15 @@ from .scraper import Scraper
 from common import print_headline_list, list_distinct_categories, get_article_count_by_category, print_category_count_statistics, get_base_url, is_number
 
 URL_FILTERS = (
-	'kundeportal.aftenposten.no',
+	'godt.no',
+	'kundeweb.bt.no',
+	'widget-list.herokuapp.com',
+	'proaktiv.no'
 )
 
-class Aftenposten(Scraper):
+class Bt(Scraper):
 	def __init__(self, url=None):
-		super().__init__('aftenposten', 'http://aftenposten.no')
+		super().__init__('bt', 'http://bt.no')
 		self.url = url if url else self.default_url
 
 	def get_article_category(self, article_url):
@@ -19,19 +22,23 @@ class Aftenposten(Scraper):
 		path = parsed_url.path
 		try:
 			category = path.split('/')[1]
-			return category
+
+			if "podcast" in category:
+				return "podcast"
+
+			return category if not is_number(category) else None
 		except IndexError:
 			return None
 
 	def scrape(self, html):
 		dom = pq(html)
-		headline_elements = dom('.df-blk')
+		headline_elements = dom('.df-article-content')
 
 		headlines = []
 		for headline in headline_elements.items():
-			if len(headline.parents('a')) == 0:
+			if len(pq(headline)('a')) == 0:
 				continue
-			url = pq(headline.parents('a')[0]).attr['href']
+			url = pq(pq(headline)('a')[0]).attr['href']
 			text = headline.text()
 
 			filtered_url = False

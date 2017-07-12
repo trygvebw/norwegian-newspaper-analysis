@@ -4,7 +4,7 @@ import sys
 import datetime
 import shelve
 
-from parsers import Adressa, Bt, Aftenposten, Aftenbladet, Dagbladet, Morgenbladet
+from scrapers import scrapers
 from common import print_headline_list, list_distinct_categories, get_article_count_by_category, print_category_count_statistics
 
 def main(args):
@@ -27,14 +27,14 @@ def main(args):
 	else:
 		print('Did not scrape any headlines')
 
-scrapers = {
-	'aftenposten': Aftenposten,
-	'bt': Bt,
-	'aftenbladet': Aftenbladet,
-	'dagbladet': Dagbladet,
-	'morgenbladet': Morgenbladet,
-	'adressa': Adressa,
-}
+def run_all(args):
+	for scraper in scrapers.values():
+		if scraper is scrapers['all']:
+			continue
+		main({
+			'scraper': scraper,
+			'url': None,
+		})
 
 def parse_arguments():
 	args = sys.argv
@@ -51,4 +51,8 @@ def parse_arguments():
 	}
 
 if __name__ == "__main__":
-	main(parse_arguments())
+	args = parse_arguments()
+	if args['scraper'] is scrapers['all']:
+		run_all(args)
+	else:
+		main(args)

@@ -7,11 +7,15 @@ from common import print_headline_list, list_distinct_categories, get_article_co
 
 URL_FILTERS = (
 	'godt.no',
+	'mm.i.aftenbladet.no',
+	'track.adform.net',
+	'detskjer.aftenbladet.no',
+	'widget-timelines.herokuapp.com'
 )
 
-class Bt(Scraper):
+class Aftenbladet(Scraper):
 	def __init__(self, url=None):
-		super().__init__('bt', 'http://bt.no')
+		super().__init__('aftenbladet', 'http://aftenbladet.no')
 		self.url = url if url else self.default_url
 
 	def get_article_category(self, article_url):
@@ -29,13 +33,13 @@ class Bt(Scraper):
 
 	def scrape(self, html):
 		dom = pq(html)
-		headline_elements = dom('.df-blk')
+		headline_elements = dom('.df-article-content')
 
 		headlines = []
 		for headline in headline_elements.items():
-			if len(headline.parents('a')) == 0:
+			if len(pq(headline)('a')) == 0:
 				continue
-			url = pq(headline.parents('a')[0]).attr['href']
+			url = pq(pq(headline)('a')[0]).attr['href']
 			text = headline.text()
 
 			filtered_url = False
