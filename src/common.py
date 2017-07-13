@@ -7,6 +7,14 @@ GREEN = '\033[92m'
 BLUE = '\033[94m'
 END_COLOR = '\033[0m'
 
+def print_article_data(article_data):
+	article_data['observations'] = sorted(article_data['observations'], key=lambda x: x[0])
+	print((GREEN + '\n%s' + END_COLOR) % (article_data['observations'][0][1]["url"],))
+	print('Klasser: ' + ", ".join(article_data['classes']))
+	for observation in article_data['observations']:
+		print(str(observation[0]) + ": ", end='')
+		print(('%s' + ' (' + BLUE + '%s' + END_COLOR + ")") % (observation[1]["text"], observation[1]["category"],))
+
 def print_headline_list(headline_list):
 	for headline in headline_list:
 		print(('\n%s' + ' (' + BLUE + '%s' + END_COLOR + GREEN + ')\n%s' + END_COLOR) % (headline["text"], headline["category"], headline["url"],))
