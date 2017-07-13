@@ -1,2 +1,6 @@
 pyquery
 requests
+sklearn
+numpy
+scipy
+pandas

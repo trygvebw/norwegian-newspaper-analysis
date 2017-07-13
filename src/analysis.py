@@ -10,7 +10,7 @@ from common import print_article_data
 def analyse(db):
 	pass
 
-def classify(db, metadata):
+def classify(db, metadata, repeat_classified=True):
 	assert len(sys.argv) >= 3
 	source = sys.argv[2]
 	assert source in scrapers.keys()
@@ -30,6 +30,9 @@ def classify(db, metadata):
 		urls_in_run = len(source_data.keys())
 		url_index = list(source_data.keys())[random.randrange(urls_in_run)]
 		article = source_data[url_index]
+
+		if len(article['classes']) > 0 and not repeat_classified:
+			continue
 
 		print_article_data(article)
 		print('Existing classes: {}'.format(', '.join(metadata['classes'])))
@@ -59,7 +62,7 @@ def main(command):
 		elif command == 'classify':
 			with shelve.open('results/data', writeback=True) as db:
 				try:
-					classify(db, metadata)
+					classify(db, metadata, repeat_classified=False)
 				except KeyboardInterrupt as e:
 					print('')
 					pass
